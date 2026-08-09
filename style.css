@@ -308,6 +308,47 @@ input, select, textarea { font-family: inherit; }
 .filter-chip:hover:not(.active) { background: var(--light-sage); }
 .chip-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 
+/* ---- Task modal: multi-select content types ---- */
+.checkbox-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+.checkbox-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 6px 12px 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.checkbox-pill:hover { background: var(--light-sage); }
+.checkbox-pill input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--sage);
+  cursor: pointer;
+}
+.checkbox-pill:has(input:checked) {
+  background: var(--sage);
+  border-color: var(--sage);
+  color: #fff;
+}
+.multi-stage-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: -6px 0 14px;
+  line-height: 1.4;
+}
+
 .project-legend {
   display: flex; gap: 16px; flex-wrap: wrap;
   margin-bottom: 18px; font-size: 12px; color: var(--muted);

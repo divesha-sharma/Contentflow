@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ContentFlow — Social Media Management Calendar</title>
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#7A8F72">
 </head>
 <body>
 
@@ -181,28 +185,41 @@
       <h2 id="taskModalTitle">Add Task</h2>
       <button class="btn-close" id="closeTaskModal">✕</button>
     </div>
-    <form id="taskForm">
+    <form id="taskForm" autocomplete="off">
       <input type="hidden" id="taskId">
       <label>Task name
-        <input type="text" id="taskName" required placeholder="e.g. Sattvic Reel">
+        <input type="text" id="taskName" required placeholder="e.g. Sattvic" autocomplete="off">
       </label>
       <label>Project
         <select id="taskProject" required></select>
       </label>
-      <label>Content type
-        <select id="taskContentType" required>
-          <option value="Reel">Reel</option>
-          <option value="Carousel">Carousel</option>
-          <option value="Story">Story</option>
-          <option value="Static Post">Static Post</option>
-          <option value="Event">Event</option>
-          <option value="Meeting">Meeting</option>
-          <option value="Other">Other</option>
-        </select>
-      </label>
-      <label>Pipeline stage
-        <select id="taskStage" required></select>
-      </label>
+
+      <div id="taskContentTypeSingleWrap">
+        <label>Content type
+          <select id="taskContentType" required>
+            <option value="Reel">Reel</option>
+            <option value="Carousel">Carousel</option>
+            <option value="Story">Story</option>
+            <option value="Static Post">Static Post</option>
+            <option value="Event">Event</option>
+            <option value="Meeting">Meeting</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="taskContentTypeMultiWrap">
+        <label>Content type(s) <span class="optional-tag">tick everything you're posting for this topic</span></label>
+        <div class="checkbox-grid" id="taskContentTypeCheckboxes"></div>
+      </div>
+
+      <div id="taskStageWrap">
+        <label>Pipeline stage
+          <select id="taskStage" required></select>
+        </label>
+      </div>
+      <p class="multi-stage-hint" id="multiStageHint">Each type you tick starts at its first pipeline stage — move it along afterward from the day panel.</p>
+
       <label>Date
         <input type="date" id="taskDate" required>
       </label>
@@ -216,6 +233,7 @@
         <button type="button" class="btn-secondary" id="cancelTaskModal">Cancel</button>
         <button type="submit" class="btn-primary">Save</button>
       </div>
+
     </form>
   </div>
 </div>
@@ -227,10 +245,10 @@
       <h2 id="ideaModalTitle">New Idea</h2>
       <button class="btn-close" id="closeIdeaModal">✕</button>
     </div>
-    <form id="ideaForm">
+    <form id="ideaForm" autocomplete="off">
       <input type="hidden" id="ideaId">
       <label>Title
-        <input type="text" id="ideaTitle" required placeholder="e.g. things I learned running a workshop">
+        <input type="text" id="ideaTitle" required placeholder="e.g. things I learned running a workshop" autocomplete="off">
       </label>
       <label>Description <span class="optional-tag">optional</span>
         <textarea id="ideaDescription" rows="3"></textarea>
@@ -248,7 +266,7 @@
         </select>
       </label>
       <label>Tags <span class="optional-tag">optional, comma separated</span>
-        <input type="text" id="ideaTags" placeholder="e.g. workshop, tips">
+        <input type="text" id="ideaTags" placeholder="e.g. workshop, tips" autocomplete="off">
       </label>
       <div class="modal-actions">
         <button type="button" class="btn-secondary" id="cancelIdeaModal">Cancel</button>
@@ -265,7 +283,7 @@
       <h2>Add Idea to Calendar</h2>
       <button class="btn-close" id="closeIdeaToCalendarModal">✕</button>
     </div>
-    <form id="ideaToCalendarForm">
+    <form id="ideaToCalendarForm" autocomplete="off">
       <input type="hidden" id="ideaToCalendarIdeaId">
       <label>Date
         <input type="date" id="ideaToCalendarDate" required>
@@ -294,10 +312,10 @@
       <h2 id="projectModalTitle">Add Project</h2>
       <button class="btn-close" id="closeProjectModal">✕</button>
     </div>
-    <form id="projectForm">
+    <form id="projectForm" autocomplete="off">
       <input type="hidden" id="projectId">
       <label>Project name
-        <input type="text" id="projectName" required placeholder="e.g. Sattvic">
+        <input type="text" id="projectName" required placeholder="e.g. Sattvic" autocomplete="off">
       </label>
       <label>Color</label>
       <div id="colorSwatches" class="color-swatches"></div>
@@ -317,10 +335,10 @@
       <h2 id="personModalTitle">Add Person</h2>
       <button class="btn-close" id="closePersonModal">✕</button>
     </div>
-    <form id="personForm">
+    <form id="personForm" autocomplete="off">
       <input type="hidden" id="personId">
       <label>Name
-        <input type="text" id="personName" required placeholder="e.g. Aayush">
+        <input type="text" id="personName" required placeholder="e.g. Aayush" autocomplete="off">
       </label>
       <label>Project <span class="optional-tag">optional</span>
         <select id="personProject">
@@ -342,10 +360,10 @@
       <h2 id="assignedTaskModalTitle">Assign Task</h2>
       <button class="btn-close" id="closeAssignedTaskModal">✕</button>
     </div>
-    <form id="assignedTaskForm">
+    <form id="assignedTaskForm" autocomplete="off">
       <input type="hidden" id="assignedTaskId">
       <label>Task name
-        <input type="text" id="assignedTaskName" required placeholder="e.g. Shoot Sattvic reel">
+        <input type="text" id="assignedTaskName" required placeholder="e.g. Shoot Sattvic reel" autocomplete="off">
       </label>
       <label>Person
         <select id="assignedTaskPerson" required></select>
@@ -382,5 +400,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
+<script>
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
 </body>
 </html>

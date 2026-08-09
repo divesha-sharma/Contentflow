@@ -603,20 +603,57 @@ function populateStageSelect(typeSelectId, stageSelectId) {
   stageSelect.value = stages.includes(prevValue) ? prevValue : stages[0];
 }
 
+function renderTaskTypeCheckboxes(selectedTypes) {
+  const container = document.getElementById('taskContentTypeCheckboxes');
+  const allTypes = [...CONTENT_TYPES, ...NON_CONTENT_TYPES];
+  container.innerHTML = allTypes.map(t => `
+    <label class="checkbox-pill">
+      <input type="checkbox" value="${t}" ${selectedTypes && selectedTypes.includes(t) ? 'checked' : ''}>
+      <span>${t}</span>
+    </label>
+  `).join('');
+}
+
 function openTaskModal(task, prefillDate) {
   populateProjectSelects();
-  document.getElementById('taskModalTitle').textContent = task ? 'Edit Task' : 'Add Task';
-  document.getElementById('taskId').value = task ? task.id : '';
-  document.getElementById('taskName').value = task ? task.name : '';
-  document.getElementById('taskContentType').value = task ? task.contentType : 'Reel';
-  populateStageSelect('taskContentType', 'taskStage');
-  document.getElementById('taskStage').value = task ? task.stage : 'Idea';
-  document.getElementById('taskDate').value = task ? task.date : (prefillDate || todayKey());
-  document.getElementById('taskTime').value = task && task.time ? task.time : '';
-  document.getElementById('taskNotes').value = task && task.notes ? task.notes : '';
+  const isEdit = !!task;
+
+  document.getElementById('taskModalTitle').textContent = isEdit ? 'Edit Task' : 'Add Task';
+  document.getElementById('taskId').value = isEdit ? task.id : '';
+  document.getElementById('taskName').value = isEdit ? task.name : '';
+  document.getElementById('taskDate').value = isEdit ? task.date : (prefillDate || todayKey());
+  document.getElementById('taskTime').value = isEdit && task.time ? task.time : '';
+  document.getElementById('taskNotes').value = isEdit && task.notes ? task.notes : '';
 
   if (projects.length > 0) {
-    document.getElementById('taskProject').value = task ? task.projectId : projects[0].id;
+    document.getElementById('taskProject').value = isEdit ? task.projectId : projects[0].id;
+  }
+
+  const singleWrap = document.getElementById('taskContentTypeSingleWrap');
+  const multiWrap = document.getElementById('taskContentTypeMultiWrap');
+  const stageWrap = document.getElementById('taskStageWrap');
+  const stageHint = document.getElementById('multiStageHint');
+  const contentTypeSelect = document.getElementById('taskContentType');
+  const stageSelect = document.getElementById('taskStage');
+
+  if (isEdit) {
+    singleWrap.style.display = '';
+    multiWrap.style.display = 'none';
+    stageWrap.style.display = '';
+    stageHint.style.display = 'none';
+    contentTypeSelect.disabled = false;
+    stageSelect.disabled = false;
+    contentTypeSelect.value = task.contentType;
+    populateStageSelect('taskContentType', 'taskStage');
+    stageSelect.value = task.stage;
+  } else {
+    singleWrap.style.display = 'none';
+    multiWrap.style.display = '';
+    stageWrap.style.display = 'none';
+    stageHint.style.display = '';
+    contentTypeSelect.disabled = true;
+    stageSelect.disabled = true;
+    renderTaskTypeCheckboxes();
   }
 
   document.getElementById('taskModal').classList.add('open');
@@ -636,29 +673,53 @@ async function saveTask(e) {
   const id = document.getElementById('taskId').value;
   const submitBtn = e.target.querySelector('button[type="submit"]');
 
-  const row = {
-    name: document.getElementById('taskName').value.trim(),
-    project_id: document.getElementById('taskProject').value,
-    content_type: document.getElementById('taskContentType').value,
-    stage: document.getElementById('taskStage').value,
-    date: document.getElementById('taskDate').value,
-    time: document.getElementById('taskTime').value || null,
-    notes: document.getElementById('taskNotes').value.trim()
-  };
+  const name = document.getElementById('taskName').value.trim();
+  const projectId = document.getElementById('taskProject').value;
+  const date = document.getElementById('taskDate').value;
+  const time = document.getElementById('taskTime').value || null;
+  const notes = document.getElementById('taskNotes').value.trim();
 
-  if (!row.name || !projects.length) return;
+  if (!name || !projectId || !projects.length) return;
 
   setBusy(submitBtn, true);
   try {
     if (id) {
+      // Editing an existing task: single row, single type + stage, as before.
+      const row = {
+        name,
+        project_id: projectId,
+        content_type: document.getElementById('taskContentType').value,
+        stage: document.getElementById('taskStage').value,
+        date, time, notes
+      };
       const { data, error } = await supabaseClient.from('tasks').update(row).eq('id', id).select().single();
       if (error) throw error;
       const existing = tasks.find(t => t.id === id);
       Object.assign(existing, mapTaskRow(data));
     } else {
-      const { data, error } = await supabaseClient.from('tasks').insert(row).select().single();
+      // Adding a new task: one or more content types checked, each becomes its own row,
+      // starting at that type's first pipeline stage, so each can be tracked separately.
+      const checkedTypes = Array.from(
+        document.querySelectorAll('#taskContentTypeCheckboxes input[type="checkbox"]:checked')
+      ).map(cb => cb.value);
+
+      if (checkedTypes.length === 0) {
+        alert('Tick at least one content type.');
+        setBusy(submitBtn, false);
+        return;
+      }
+
+      const rows = checkedTypes.map(type => ({
+        name,
+        project_id: projectId,
+        content_type: type,
+        stage: getStageOptionsFor(type)[0],
+        date, time, notes
+      }));
+
+      const { data, error } = await supabaseClient.from('tasks').insert(rows).select();
       if (error) throw error;
-      tasks.push(mapTaskRow(data));
+      data.forEach(r => tasks.push(mapTaskRow(r)));
     }
     closeTaskModal();
     if (activeDateKey) renderDatePanelTasks();
