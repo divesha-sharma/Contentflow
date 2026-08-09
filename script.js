@@ -770,7 +770,7 @@ function renderMiniTaskRow(t) {
   const project = getProjectById(t.projectId);
   const color = project ? project.color : '#8A8C83';
   return `<div class="mini-task-row"><span class="chip-dot" style="background:${color}"></span>
-    ${escapeHtml(t.name)} <span style="color:var(--muted); margin-left:auto;">${t.date}</span></div>`;
+    <span class="mini-task-name">${escapeHtml(t.name)}</span> <span style="color:var(--muted); flex-shrink:0;">${t.date}</span></div>`;
 }
 
 function renderDashboardWeekStats() {

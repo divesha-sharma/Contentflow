@@ -243,6 +243,7 @@ input, select, textarea { font-family: inherit; }
   gap: 18px;
 }
 
+.dashboard-card { min-width: 0; }
 .dashboard-card h3 { font-size: 15px; margin-bottom: 12px; color: var(--text); }
 
 .dashboard-today-list, .upcoming-list, .quick-ideas-list {
@@ -255,6 +256,15 @@ input, select, textarea { font-family: inherit; }
   border-radius: var(--radius-sm);
   background: var(--light-sage);
   font-size: 13px;
+  min-width: 0;
+}
+
+.mini-task-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
 }
 
 .empty-state { color: var(--muted); font-size: 13px; font-style: italic; }
@@ -306,7 +316,7 @@ input, select, textarea { font-family: inherit; }
 }
 .filter-chip.active { background: var(--sage); color: #fff; border-color: var(--sage); }
 .filter-chip:hover:not(.active) { background: var(--light-sage); }
-.chip-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.chip-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
 /* ---- Task modal: multi-select content types ---- */
 .checkbox-grid {
