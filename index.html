@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContentFlow — Social Media Management Calendar</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ APP LOADING / CONNECTION OVERLAY ============ -->
+<div class="app-loading-overlay open" id="appLoading">
+  <div class="app-loading-spinner"></div>
+  <p class="app-loading-text">Loading your workspace…</p>
+</div>
+
+<div class="app">
+
+  <!-- ============ DESKTOP SIDEBAR ============ -->
+  <nav class="sidebar" id="sidebar">
+    <div class="logo">
+      <span class="logo-icon">🗓</span>
+      <span class="logo-text">ContentFlow</span>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item active" data-view="dashboard"><span class="nav-icon">🏠</span> Dashboard</li>
+      <li class="nav-item" data-view="calendar"><span class="nav-icon">🗓</span> Calendar</li>
+      <li class="nav-item" data-view="ideas"><span class="nav-icon">💡</span> Ideas</li>
+      <li class="nav-item" data-view="people"><span class="nav-icon">👥</span> People &amp; Tasks</li>
+      <li class="nav-item" data-view="projects"><span class="nav-icon">📁</span> Projects</li>
+    </ul>
+  </nav>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <!-- ---------- DASHBOARD VIEW ---------- -->
+    <section class="view active" id="dashboard-view">
+      <header class="view-header">
+        <h1>Dashboard</h1>
+        <p class="view-subtitle">A quick look at where everything stands.</p>
+      </header>
+
+      <div class="dashboard-grid">
+        <div class="card dashboard-card">
+          <h3>Today</h3>
+          <div id="dashboardToday" class="dashboard-today-list"></div>
+        </div>
+
+        <div class="card dashboard-card">
+          <h3>This Week</h3>
+          <div id="dashboardWeekStats" class="week-stats"></div>
+        </div>
+
+        <div class="card dashboard-card">
+          <h3>Content Pipeline</h3>
+          <div id="dashboardPipeline" class="pipeline-stats"></div>
+        </div>
+
+        <div class="card dashboard-card">
+          <h3>Upcoming</h3>
+          <div id="dashboardUpcoming" class="upcoming-list"></div>
+        </div>
+
+        <div class="card dashboard-card">
+          <h3>Quick Ideas</h3>
+          <div id="dashboardQuickIdeas" class="quick-ideas-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- CALENDAR VIEW ---------- -->
+    <section class="view" id="calendar-view">
+      <header class="view-header">
+        <h1>Calendar</h1>
+        <p class="view-subtitle">Plan → Create → Assign → Post</p>
+      </header>
+
+      <div class="calendar-toolbar">
+        <div class="calendar-nav">
+          <button id="calPrevBtn" class="btn-icon" title="Previous">‹</button>
+          <button id="calTodayBtn" class="btn-secondary">Today</button>
+          <button id="calNextBtn" class="btn-icon" title="Next">›</button>
+          <span id="calCurrentLabel" class="calendar-label"></span>
+        </div>
+        <div class="calendar-view-switch">
+          <button class="view-switch-btn active" id="viewMonthBtn" data-cview="month">Month</button>
+          <button class="view-switch-btn" id="viewWeekBtn" data-cview="week">Week</button>
+          <button class="view-switch-btn" id="viewYearBtn" data-cview="year">Year</button>
+        </div>
+      </div>
+
+      <div class="calendar-filters">
+        <div id="calProjectFilterList" class="project-filter-list"></div>
+      </div>
+
+      <div id="calLegend" class="project-legend"></div>
+
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </section>
+
+    <!-- ---------- IDEAS VIEW ---------- -->
+    <section class="view" id="ideas-view">
+      <header class="view-header">
+        <h1>Idea Vault</h1>
+        <p class="view-subtitle">Catch every spark before it fades.</p>
+        <button id="newIdeaBtn" class="btn-primary">+ New Idea</button>
+      </header>
+
+      <div class="ideas-toolbar">
+        <input type="text" id="ideaSearchInput" class="search-input" placeholder="Search ideas…">
+        <div id="ideaTypeFilter" class="type-filter-list"></div>
+        <select id="ideaProjectFilter" class="select-input"></select>
+      </div>
+
+      <div id="ideasList" class="ideas-grid"></div>
+    </section>
+
+    <!-- ---------- PEOPLE & TASKS VIEW ---------- -->
+    <section class="view" id="people-view">
+      <header class="view-header">
+        <h1>People &amp; Tasks</h1>
+        <p class="view-subtitle">Keep track of what everyone's working on.</p>
+        <button id="addPersonBtn" class="btn-primary">+ Add Person</button>
+      </header>
+
+      <div id="peopleList" class="people-list"></div>
+    </section>
+
+    <!-- ---------- PROJECTS VIEW ---------- -->
+    <section class="view" id="projects-view">
+      <header class="view-header">
+        <h1>Projects</h1>
+        <p class="view-subtitle">Every project has its own color, everywhere.</p>
+        <button id="addProjectBtn" class="btn-primary">+ Add Project</button>
+      </header>
+
+      <div id="projectsList" class="projects-grid"></div>
+    </section>
+
+  </main>
+
+  <!-- ============ MOBILE BOTTOM NAV ============ -->
+  <nav class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-item active" data-view="dashboard"><span>🏠</span>Home</button>
+    <button class="mobile-nav-item" data-view="calendar"><span>🗓</span>Calendar</button>
+    <button class="mobile-nav-item" data-view="ideas"><span>💡</span>Ideas</button>
+    <button class="mobile-nav-item" data-view="people"><span>👥</span>People</button>
+    <button class="mobile-nav-item" data-view="projects"><span>📁</span>Projects</button>
+  </nav>
+
+</div>
+
+<!-- ============ FLOATING QUICK ADD ============ -->
+<div class="quick-add-container">
+  <div class="quick-add-menu" id="quickAddMenu">
+    <button id="quickAddTaskBtn">🗓 Add Task</button>
+    <button id="quickAddIdeaBtn">💡 Add Idea</button>
+    <button id="quickAddAssignBtn">👥 Assign Task</button>
+  </div>
+  <button class="fab" id="fabBtn">+</button>
+</div>
+
+<!-- ============ OVERLAY (for modals/panel on mobile) ============ -->
+<div class="overlay" id="overlay"></div>
+
+<!-- ============ DATE SIDE PANEL ============ -->
+<div class="side-panel" id="datePanel">
+  <div class="side-panel-header">
+    <h2 id="datePanelTitle">Date</h2>
+    <button class="btn-close" id="closeDatePanel">✕</button>
+  </div>
+  <div class="side-panel-body" id="datePanelContent"></div>
+  <button class="btn-primary btn-block" id="datePanelAddTaskBtn">+ Add Task</button>
+</div>
+
+<!-- ============ TASK MODAL ============ -->
+<div class="modal" id="taskModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="taskModalTitle">Add Task</h2>
+      <button class="btn-close" id="closeTaskModal">✕</button>
+    </div>
+    <form id="taskForm">
+      <input type="hidden" id="taskId">
+      <label>Task name
+        <input type="text" id="taskName" required placeholder="e.g. Sattvic Reel">
+      </label>
+      <label>Project
+        <select id="taskProject" required></select>
+      </label>
+      <label>Content type
+        <select id="taskContentType" required>
+          <option value="Reel">Reel</option>
+          <option value="Carousel">Carousel</option>
+          <option value="Story">Story</option>
+          <option value="Static Post">Static Post</option>
+          <option value="Event">Event</option>
+          <option value="Meeting">Meeting</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+      <label>Pipeline stage
+        <select id="taskStage" required></select>
+      </label>
+      <label>Date
+        <input type="date" id="taskDate" required>
+      </label>
+      <label>Time <span class="optional-tag">optional</span>
+        <input type="time" id="taskTime">
+      </label>
+      <label>Notes <span class="optional-tag">optional</span>
+        <textarea id="taskNotes" rows="3" placeholder="Any extra detail…"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelTaskModal">Cancel</button>
+        <button type="submit" class="btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ IDEA MODAL ============ -->
+<div class="modal" id="ideaModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="ideaModalTitle">New Idea</h2>
+      <button class="btn-close" id="closeIdeaModal">✕</button>
+    </div>
+    <form id="ideaForm">
+      <input type="hidden" id="ideaId">
+      <label>Title
+        <input type="text" id="ideaTitle" required placeholder="e.g. things I learned running a workshop">
+      </label>
+      <label>Description <span class="optional-tag">optional</span>
+        <textarea id="ideaDescription" rows="3"></textarea>
+      </label>
+      <label>Project
+        <select id="ideaProject" required></select>
+      </label>
+      <label>Content type
+        <select id="ideaContentType" required>
+          <option value="Reel">Reel</option>
+          <option value="Carousel">Carousel</option>
+          <option value="Story">Story</option>
+          <option value="Static Post">Static Post</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+      <label>Tags <span class="optional-tag">optional, comma separated</span>
+        <input type="text" id="ideaTags" placeholder="e.g. workshop, tips">
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelIdeaModal">Cancel</button>
+        <button type="submit" class="btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ IDEA -> CALENDAR MODAL ============ -->
+<div class="modal" id="ideaToCalendarModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Add Idea to Calendar</h2>
+      <button class="btn-close" id="closeIdeaToCalendarModal">✕</button>
+    </div>
+    <form id="ideaToCalendarForm">
+      <input type="hidden" id="ideaToCalendarIdeaId">
+      <label>Date
+        <input type="date" id="ideaToCalendarDate" required>
+      </label>
+      <label>Time <span class="optional-tag">optional</span>
+        <input type="time" id="ideaToCalendarTime">
+      </label>
+      <label>Project
+        <select id="ideaToCalendarProject" required></select>
+      </label>
+      <label>Pipeline stage
+        <select id="ideaToCalendarStage" required></select>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelIdeaToCalendarModal">Cancel</button>
+        <button type="submit" class="btn-primary">Add to Calendar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ PROJECT MODAL ============ -->
+<div class="modal" id="projectModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="projectModalTitle">Add Project</h2>
+      <button class="btn-close" id="closeProjectModal">✕</button>
+    </div>
+    <form id="projectForm">
+      <input type="hidden" id="projectId">
+      <label>Project name
+        <input type="text" id="projectName" required placeholder="e.g. Sattvic">
+      </label>
+      <label>Color</label>
+      <div id="colorSwatches" class="color-swatches"></div>
+      <input type="hidden" id="projectColor">
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelProjectModal">Cancel</button>
+        <button type="submit" class="btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ PERSON MODAL ============ -->
+<div class="modal" id="personModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="personModalTitle">Add Person</h2>
+      <button class="btn-close" id="closePersonModal">✕</button>
+    </div>
+    <form id="personForm">
+      <input type="hidden" id="personId">
+      <label>Name
+        <input type="text" id="personName" required placeholder="e.g. Aayush">
+      </label>
+      <label>Project <span class="optional-tag">optional</span>
+        <select id="personProject">
+          <option value="">— none —</option>
+        </select>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelPersonModal">Cancel</button>
+        <button type="submit" class="btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ ASSIGNED TASK MODAL ============ -->
+<div class="modal" id="assignedTaskModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="assignedTaskModalTitle">Assign Task</h2>
+      <button class="btn-close" id="closeAssignedTaskModal">✕</button>
+    </div>
+    <form id="assignedTaskForm">
+      <input type="hidden" id="assignedTaskId">
+      <label>Task name
+        <input type="text" id="assignedTaskName" required placeholder="e.g. Shoot Sattvic reel">
+      </label>
+      <label>Person
+        <select id="assignedTaskPerson" required></select>
+      </label>
+      <label>Project <span class="optional-tag">optional</span>
+        <select id="assignedTaskProject">
+          <option value="">— none —</option>
+        </select>
+      </label>
+      <label>Deadline <span class="optional-tag">optional</span>
+        <input type="date" id="assignedTaskDeadline">
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelAssignedTaskModal">Cancel</button>
+        <button type="submit" class="btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ CONFIRM MODAL ============ -->
+<div class="modal" id="confirmModal">
+  <div class="modal-content modal-small">
+    <div class="modal-header">
+      <h2>Please confirm</h2>
+    </div>
+    <p id="confirmMessage" class="confirm-message"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="confirmCancelBtn">Cancel</button>
+      <button type="button" class="btn-danger" id="confirmYesBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+</body>
+</html>
