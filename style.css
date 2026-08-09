@@ -359,7 +359,7 @@ input, select, textarea { font-family: inherit; }
 /* ============ CALENDAR GRID — MONTH ============ */
 .month-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -378,6 +378,9 @@ input, select, textarea { font-family: inherit; }
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   min-height: 92px;
+  max-height: 92px;
+  overflow: hidden;
+  min-width: 0;
   padding: 8px;
   cursor: pointer;
   transition: var(--transition);
@@ -387,7 +390,7 @@ input, select, textarea { font-family: inherit; }
 .day-cell.other-month { opacity: 0.4; }
 .day-cell.is-today { border: 1.5px solid var(--sage); background: var(--light-sage); }
 
-.day-number { font-size: 13px; font-weight: 600; }
+.day-number { font-size: 13px; font-weight: 600; flex-shrink: 0; }
 
 .day-task-chip {
   font-size: 11px;
@@ -398,6 +401,10 @@ input, select, textarea { font-family: inherit; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+  max-width: 100%;
+  flex-shrink: 0;
+  word-break: break-all;
 }
 
 .day-more-label { font-size: 11px; color: var(--muted); font-weight: 600; padding-left: 4px; }
@@ -405,7 +412,7 @@ input, select, textarea { font-family: inherit; }
 /* ============ WEEK VIEW ============ */
 .week-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -414,7 +421,10 @@ input, select, textarea { font-family: inherit; }
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 10px;
-  min-height: 220px;
+  height: 220px;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   cursor: pointer;
   transition: var(--transition);
 }
